@@ -1,0 +1,1 @@
+CREATE INDEX group_id_index ON Groups (GroupId)

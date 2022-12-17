@@ -1,0 +1,3 @@
+flyway:
+  migrationTable: "my_schema_history_table"
+  migrationLocations: ["classpath:migrations"]
