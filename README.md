@@ -4,10 +4,10 @@
 
 ### Idea
 
-The main idea of project to create an application for making post on different platform with telegram bot as user interface. 
-It can help when have many social networks, and you want to post something to all of them. 
+The main idea of the project is to create an application for making posts on different platforms with telegram bot as user interface. It can help when you have many social networks, and you want to post something to all of them.
 
 In terms of project composition of places where message should post called 'Group'
+
 
 ### Current status
 Now implemented three services
@@ -18,11 +18,10 @@ Now implemented three services
 ### Plans
 1. Create services for posting to other platforms like [Discord](https://discord.com/) or [VK](https://vk.com/)
 2. Add support of posts scheduling
-3. Maybe add small frontend writen in Rust with [Yew](https://yew.rs/)
+3. Maybe add small frontend written in Rust with [Yew](https://yew.rs/)
 
 ### Commands DSL
-While developing telegram bot was implemented Commands DSL. Suppose of Commands DSL is parsing argument of bot commands easily. Now I use it for parsing telegram messages and
-it can be used for parsing arguments of other platforms messages.
+While developing telegram bot, Commands DSL was implemented. Suppose of Commands DSL is parsing arguments of bot commands easily. Now I use it for parsing telegram messages and it can be used for parsing arguments of other platforms messages.
 
 Format of commands:
 ```scala
