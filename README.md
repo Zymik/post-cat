@@ -25,14 +25,14 @@ While developing telegram bot was implemented Commands DSL. Suppose of Commands 
 it can be used for parsing arguments of other platforms messages.
 
 Format of commands:
-```
+```scala
  / commandName / commandDescription / argsParse [~| contextResolver] ~> commands | ...
 ```
 
 context resolver put in brackets, because it can be resolved implicitly
 
 Example from sources:
-```
+```scala
   private val commands: BotCommands[F] = {
       "/start" / "Register in post service" / arg[Unit] ~> register |
       "/create_group" / "Create group with name" / arg[String] ~> groupController.createGroup |
