@@ -2,6 +2,7 @@ package ru.kosolapov.ivan.postcat.api
 
 import cats.effect.{ExitCode, IO, IOApp}
 import com.comcast.ip4s.IpLiteralSyntax
+import doobie.hikari.HikariTransactor
 import org.http4s.ember.server.EmberServerBuilder
 import ru.kosolapov.ivan.postcat.common.config.DatabaseConfiguration
 import ru.kosolapov.ivan.postcat.common.config.database.jdbcConfig
@@ -11,25 +12,28 @@ object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     for {
       jdbcConfig <- jdbcConfig.load[IO]
-      _ <- DatabaseConfiguration.getTransactor[IO](jdbcConfig).use(
-        transactor => {
-          val repositoryConfiguration = new RepositoryConfiguration[IO](transactor)
-          val serviceConfiguration = new ServiceConfiguration[IO](repositoryConfiguration)
-          val controllerConfiguration = new ControllerConfiguration[IO](serviceConfiguration)
-          val routes = RoutesConfiguration.getRoutes(
-            controllerConfiguration,
-            serviceConfiguration
-          )
-          EmberServerBuilder.default[IO]
-            .withPort(port"9090")
-            .withHost(ip"0.0.0.0")
-            .withHttpApp(
-              routes.orNotFound
-            )
-            .build
-            .use(_ => IO.never)
-        }
-      )
+      _ <- DatabaseConfiguration.getTransactor[IO](jdbcConfig).flatMap(
+        transactor => getServer(transactor)
+      ).use(_ => IO.never)
     } yield ExitCode.Success
+  }
+
+  private def getServer(transactor: HikariTransactor[IO]) = {
+
+    val repositoryConfiguration = new RepositoryConfiguration[IO](transactor)
+    val serviceConfiguration = new ServiceConfiguration[IO](repositoryConfiguration)
+    val controllerConfiguration = new ControllerConfiguration[IO](serviceConfiguration)
+    val routes = RoutesConfiguration.getRoutes(
+      controllerConfiguration,
+      serviceConfiguration
+    )
+    EmberServerBuilder.default[IO]
+      .withPort(port"9090")
+      .withHost(ip"0.0.0.0")
+      .withHttpApp(
+        routes.orNotFound
+      )
+      .build
+
   }
 }

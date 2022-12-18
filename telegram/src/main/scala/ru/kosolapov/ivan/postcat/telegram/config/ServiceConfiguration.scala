@@ -40,6 +40,7 @@ class ServiceConfiguration[F[_] : MonadCancelThrow : Concurrent : Logger]
   val rightsService: RightsService[F] = new RightsServiceImpl[F](chatClient)
 
   val postService: PostService[F] = new PostServiceImpl[F](
-    rightsService, chatClient
+    rightsService,
+    chatClient
   )
 }

@@ -10,6 +10,7 @@ import org.http4s.implicits.http4sLiteralsSyntax
 import org.http4s.{Method, Request}
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import ru.kosolapov.ivan.postcat.common.config.database.JdbcConfig
 import ru.kosolapov.ivan.postcat.common.config.database.migration.FlywayMigration
 import ru.kosolapov.ivan.postcat.common.config.{DatabaseConfiguration, database}
 import ru.kosolapov.ivan.postcat.core.client.telegram.TelegramClientImpl
@@ -25,18 +26,20 @@ object Application extends IOApp {
       jdbcConfig <- database.jdbcConfig.load[IO]
       flywayConfig <- database.flywayConfig[IO].load
       _ <- FlywayMigration.migrate[IO](flywayConfig)
-      _ <- (for {
-        xa <- DatabaseConfiguration.getTransactor[IO](jdbcConfig)
-        client <- EmberClientBuilder.default[IO].build
-      } yield (xa, client)).use {
-        case (xa, client) =>
-          configureClient(xa, client)
-      }
+      _ <- getServer(jdbcConfig).use(_ => IO.never)
     }
     yield ExitCode.Success
   }
 
-  private def configureClient(xa: HikariTransactor[IO], client: Client[IO]) = {
+  private def getServer(jdbcConfig: JdbcConfig) = {
+    for {
+      xa <- DatabaseConfiguration.getTransactor[IO](jdbcConfig)
+      client <- EmberClientBuilder.default[IO].build
+      server <- configureServer(xa, client)
+    } yield server
+  }
+
+  private def configureServer(xa: HikariTransactor[IO], client: Client[IO]) = {
     val request = Request[IO](method = Method.POST, uri = uri"http://localhost:8090/channel/post")
 
     val repositoryConfiguration = new RepositoryConfiguration[IO](xa)
@@ -67,6 +70,6 @@ object Application extends IOApp {
         ).orNotFound
       )
       .build
-      .use(_ => IO.never)
+
   }
 }
