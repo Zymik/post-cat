@@ -49,7 +49,7 @@ class PostServiceTest extends IOTest {
 
       PostService.combinePostServices(firstServiceMock, secondServiceMock)
         .post(group, post)
-        .asserting _ shouldBe firstResult
+        .asserting(_ shouldBe firstResult)
     }
   }
 

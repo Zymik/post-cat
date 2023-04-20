@@ -19,7 +19,7 @@ class Commands[F[_], C, O]
     new Commands(command :: commands)
 
   /**
-   * Try to execut command with context and message, that will be parsed to args
+   * Try to execute command with context and message, that will be parsed to args
    * @return [[Some]] of [[CommandExecution]] if matched some args were parsed and context resolved,
    *         [[None]] if can not parse args from message and resolve context for each command
    */

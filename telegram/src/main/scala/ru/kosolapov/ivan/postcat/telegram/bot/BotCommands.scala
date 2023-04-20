@@ -36,10 +36,8 @@ class BotCommands[F[_] : Monad]
     (groupController.setRestApiPublicity _)(false)
 
   // Context resolvers
-  private def getUser(message: Message): Option[TelegramUserId] =
-    for {
-      userId <- message.from.map(u => TelegramUserId(u.id))
-    } yield userId
+  private def getUser(message: Message): Option[TelegramUserId] = message.from.map(u => TelegramUserId(u.id))
+
 
   private implicit val userIdContext: Kleisli[Option, Message, TelegramUserId] = Kleisli(getUser)
 
