@@ -3,6 +3,8 @@ package ru.kosolapov.ivan.postcat.common.command.dsl
 import cats.data.Kleisli
 import cats.parse.{Parser, Parser0}
 
+import scala.language.implicitConversions
+
 /**
  * Command with description and executable part
  *
@@ -44,4 +46,9 @@ class Command[F[_], C, I, A, O]
     } yield
       executable(resolvedContext)(args)
 
+}
+
+object Command {
+  implicit def toCommands[F[_], C, I, A, O](command: Command[F, C, I, A, O]): Commands[F, C, O] =
+    new Commands(List(command))
 }
